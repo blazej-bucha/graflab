@@ -1,4 +1,4 @@
-# GrafLab
+# Introduction
 
 GrafLab (GRAvity Field LABoratory) is a MATLAB-based routine to compute
 functionals of the geopotential up to high degrees (tens of thousands and
@@ -39,7 +39,7 @@ Too see a few simple aplications of GrafLab, you may visit
 If you want just a brief introduction to GrafLab, see
 [docs/user-manual.md](docs/user-manual.md).
 
-A detail GrafLab cookbook is available at
+Detailed GrafLab cookbook is available at
 [https://github.com/blazej-bucha/graflab-cookbook](https://github.com/blazej-bucha/graflab-cookbook).
 
 To go through the equations implemented in GrafLab, see
