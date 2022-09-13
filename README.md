@@ -30,7 +30,7 @@ the command line.
 
 ![graflab-gui](img/gui.png)
 
-Too see a few simple aplications of GrafLab, you may visit
+For a few simple applications of GrafLab, you may visit
 [https://www.blazejbucha.com/#GrafLab](https://www.blazejbucha.com/#GrafLab).
 
 
