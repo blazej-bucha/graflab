@@ -4,7 +4,7 @@ Provided are brief manuals to compute a functional of the geopotential (here,
 the disturbing potential) and its commission error.  All paths in this section
 are relative to the top directory of the repository.
 
-## Functional of the geopotential:
+## Functional of the geopotential
 
 * Panel `Geopotential model and reference system selection`
 
@@ -33,7 +33,7 @@ are relative to the top directory of the repository.
   `./data/output/output_EGM96.txt`.
 
 
-## Commission error:
+## Commission error
 
 All paths in this section are relative to the top directory of the repository.
 
@@ -116,7 +116,7 @@ GrafLab('OK', ...
 ```
 
 The description of the input variables can be found in the source code of
-GrafLab (look for the text: `function GrafLab` in `../src/GrafLab`).  Compare
-your output file, `../data/output/my_output_EGM96.txt`, with the
-reference file `../data/output/output_EGM96.txt`.
+GrafLab (look for the text: `function GrafLab` in `../src/GrafLab.m`). Compare
+your output file, `../data/output/my_output_EGM96.txt`, with the reference file
+`../data/output/output_EGM96.txt`.
 

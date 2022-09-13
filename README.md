@@ -17,15 +17,16 @@ beyond).
 * Supports efficient FFT-based synthesis at grids and point-by-point synthesis
   at scattered points.
 
-* Reads models in the gfc format defined by ICGEM.
+* Reads models in the [gfc](http://icgem.gfz-potsdam.de/ICGEM-Format-2011.pdf)
+  format defined by [ICGEM](http://icgem.gfz-potsdam.de).
 
 * Works with evaluation points defined by spherical as well as ellipsoidal
   coordinates.
 
 * Plots output data on a map.
 
-Users can interact with GrafLab either through a GUI (see below) or from the
-command line.
+Users can interact with GrafLab either through a GUI (the figure below) or from
+the command line.
 
 ![graflab-gui](img/gui.png)
 
@@ -67,22 +68,22 @@ If you use GrafLab in your work, please consider citing our paper on GrafLab.
 
 # Other related projects
 
-* [CHarm](https://github.com/blazej-bucha/charm) -- C library for spherical
+* [CHarm](https://github.com/blazej-bucha/charm): C library for spherical
   harmonic transforms up to high degrees (tens of thousands and beyond).
   Supports OpenMP parallelization for shared memory architectures and
   vectorized CPU instructions (AVX, AVX2, AVX-512).
 
 * [isGrafLab](https://github.com/blazej-bucha/isgraflab) (Irregular Surface
-  GRAvity Field LABoratory) -- A modified version of GrafLab to perform
-  accurate and fast synthesis of gravity field quantities at dense grids
-  residing on irregular surfaces such as the Earth's surface.
+  GRAvity Field LABoratory): A modified version of GrafLab to perform accurate
+  and fast synthesis of gravity field quantities at dense grids residing on
+  irregular surfaces such as the Earth's surface.
 
 
 # Disclaimer
 
-GrafLab is an old project that breaks literally all of the best practices in
-terms of coding and documenting standards. Nonetheless, the package seems to
-work correctly, it has been thoroughly tested and the computation speed is
+GrafLab is an old project that breaks almost all of the best practices in terms
+of coding and documenting standards. Nonetheless, the package seems to work
+correctly, it has been thoroughly tested and the computation speed is
 reasonable (as far as it is possible in MATLAB). Hoping it might still be
 useful to others, GrafLab remains being publicly available.
 
