@@ -1,0 +1,582 @@
+===============================================================================
+
+March 2020 (GrafLab 2.1.4)
+
+- Fixed a bug when loading evaluation points from a data file, using the
+  GUI and the data file is stored in a different folder than the source
+  code of GrafLab. The bug was introduced in the previous version of 
+  GrafLab (2.1.3).
+
+===============================================================================
+
+November 2019 (GrafLab 2.1.3)
+
+Series of minor updates.
+
+- Fixed a bug when computing the disturbing or the gravitational tensor
+  in LNOF and the nmax value is set to 2 (GrafLab did not start the computation
+  due to an error).
+
+- When the input spherical harmonic model follows the structure defined by 
+  ICGEM and its suffix is "gfc", GrafLab from its very first version uses the 
+  values of the geocentric gravitational constant (GM) and the radius of the 
+  reference sphere (R) from the header of that file. If these two values, 
+  entered either via the GUI or the batch mode, are different from that in the 
+  "gfc" file, GrafLab now throws a warning, saying that it will use the values 
+  from the "gfc" file. If one is not sure which values were actually used in 
+  the computation, note that the report file provides always the values used in 
+  the computation.
+
+- The lightning-fast plotting via the imagesc function is now available also
+  from the GUI. This option does not require Mapping Toolbox.
+
+- In the GUI, the font has been changed from Cambria to Helvetica, 
+  as the latter one can commonly be found under various operating systems.
+
+- The GUI now shows the entered name of the output file as well as of the
+  input file for the "Load data" computation mode.
+
+- The main window with GUI is wider, so that the pop-up menus showing the name 
+  of functionals are better readable under Linux.
+
+- Some rather uncommon symbols in the GUI were changed (e.g., the symbol for 
+  spatial degrees was changed to "deg", etc.), so that the GUI displays now 
+  correctly under Linux as well.
+
+- The version of MATLAB used to perform the computation was added to the report 
+  file.
+
+- In order to provide nicer maps, GrafLab now chooses the upper and lower 
+  limits of the colorbar based on the standard deviation of the data (from 
+  -4*STD to 4*STD) and not necessarily based on the min and max values of the 
+  data.
+
+- In the report file, GrafLab now gives the correct name of the computer 
+  (hostname) when running under Linux.
+
+===============================================================================
+
+April 2019 (GrafLab 2.1.2)
+
+Minor updates. Thanks to my students, who noticed some of the errors that 
+follow.
+
+- Fixed an error when running GrafLab via the batch mode and setting
+  the variable "Status_bar" to 0 (the computation did not start).
+
+- Added error messages when any of the input files does not exist (GGM file,
+  DTM file, data point file).
+
+===============================================================================
+
+December 2018 (GrafLab 2.1.1)
+
+Minor updates.
+
+- GrafLab can now automatically take the maximum degree from the geopotential 
+  model and use it in the synthesis also in the batch mode. This can be 
+  achieved by setting the input parameter "nmax" to the string 'nmaxGGM' (see 
+  the description of the input parameters in the source code).
+
+- Fixed an error message that has been introduced in the previous version (typo 
+  in the description of the error; related to the diagonal components of the 
+  tensors in LNOF).
+
+- Uploaded new "EGM96.mat" file with the structure that can be read by GrafLab 
+  2.1.0 and later.
+
+===============================================================================
+
+October 2018 (GrafLab 2.1.0)
+
+Moderate updates focused mostly on improving large-scale computations up to 
+ultra-high harmonic degrees (well beyond 10800).
+
+- GrafLab now takes advantage of the equatorial symmetry property of Legendre 
+  functions.  This rule provides a mutual relation between Legendre functions 
+  for the southern and the northern hemisphere. It is beneficial in case of 
+  large-scale grids that are symmetric with respect to the equator, 
+  necessitating to compute Legendre functions only for one hemisphere (Legendre 
+  functions for the other hemisphere are derived by means of this rule).
+
+  The new version of GrafLab exploits the symmetry property if *each* of the 
+  following conditions is satisfied:
+
+    1) A functional of the geopotential is to be computed (the computation of 
+       commission errors does not exploit the symmetry property).
+
+    2) The grid-wise computation mode is selected.
+
+    3) The extended-range arithmetic approach is selected to compute Legendre 
+       functions (the whole improvement is tailored to ultra-high harmonic 
+       degrees for which the standard and modified forward column approaches 
+       for Legendre functions do not provide accurate results anyway).
+
+    4) All positive latitudes have their negative counterpart or vice versa (up 
+       to a given threshold to suppress numerical inaccuracies, currently 
+       100*eps degrees). The zero latitude, i.e., the equator, may be included 
+       in the grid (again, within the 100*eps deg numerical threshold).
+
+  If all these conditions are satisfied, the symmetry property is employed 
+  *automatically*, meaning that no additional action from the user is required 
+  to enable the more efficient variant.
+
+  The gain in the computational speed when synthesising the disturbing 
+  potential is summarized for a few variants below:
+
+
+      -----------------------------------------------------------------------
+      Global equiangular         | Maximum degree   | Improvement of the new
+      grid (grid size            | of the expansion | version in terms of the 
+      as lats x longs)           |                  | computation time
+      -----------------------------------------------------------------------
+      30 arcmin (361 x 721)      | 360              | 1.3 times faster
+      5 arcmin  (2161 x 4321)    | 2160             | 1.5 times faster
+      1 armin   (10801 x 21601)  | 10800            | 1.5 times faster
+      -----------------------------------------------------------------------
+
+  Examples of some symmetric grids (shown are only the latitudes):
+           lat = [-90 -60 -30 0 30 60 90]; %Equator included
+           lat = [-80 -60 -40 -20 0 20 40 60 80]; %Equator included
+           lat = [-35 -25 -15 -5 5 15 25 35]; %Equator excluded
+           lat = [-90 -85 -80 80 85 90];
+           lat = [-90 -80 -75 -70 -69 -68 -67 -66 -65 65 66 67 68 69 70 75 80 90]; %Varying spacing
+
+  Examples of some grids that are not considered as symmetric (shown are only latitudes):
+           lat = [-90 -60 -30 0 30 60]; %The negative latitude of -90 deg does not have its positive counterpart
+           lat = [-35 -25 -15 -4.99 5 15 25 35]; %The difference "abs(abs(-4.99)-5)" is larger than the threshold of 100*eps degrees
+
+  Note that the four aforementioned conditions imply that the symmetry property 
+  can be employed also when the grid is split into several latitude bands. This 
+  is beneficial when the grid is too large and there is not enough available 
+  RAM for GrafLab (e.g., when GrafLab is called inside a parfor loop and the 
+  computation is performed on a cluster). The symmetry property can be 
+  exploited even if the latitudes of the individual bands are specified in the 
+  following manner: e.g., fi = [-90:1:-80 80:1:90];
+
+- GrafLab is now able to perform the harmonic synthesis even if the minimum 
+  degree of the imported coefficients set is larger than 2. For instance, the 
+  input file may contain coefficients only from the harmonic band 
+  2161,...,10800 or some other.  This is beneficial when the set of spherical 
+  harmonic coefficients is too large to fit into RAM. For instance, 
+  coefficients of a degree-43200 expansion require ~30 GB RAM to store them 
+  (the file has 4 columns: degree, order, Cnm, Snm). In such cases, it can be 
+  useful to split the coefficients set into several smaller subsets, such that 
+  each subset can be stored in RAM. For instance, a single coefficients set of 
+  a degree-43,200 expansion can be split into the following harmonic bands: 
+  0,...,2160; 2161,...,4320;...; 38881,...43200. Then, the computation is 
+  performed for each harmonic band separately and the results are summed (if 
+  this is permissible for the particular functional). Note that such 
+  computation involves many redundant evaluations of Legendre 
+  functions. Therefore, it is not optimized efficiently, but at least it can be 
+  performed.
+
+  Example: A file with an incomplete set of spherical harmonic coefficients can 
+           be obtained from the enclosed gravity field model EGM96 (the 
+           "EGM96.mat" file) using the following commands:
+
+           load('EGM96.mat'); %Loads EGM96, a gravity model up to degree 360
+           EGM96(EGM96(:,1)<100,:)=[]; %Deletes coefficients below degree 100
+           save EGM96_nmin100_nmax360.mat -mat -v7.3 EGM96 %Saves the harmonic band 100,...360 of the EGM96 model
+
+           The file "EGM96_nmin100_nmax360.mat" can subsequently be imported 
+           into GrafLab.
+
+- The new version of GrafLab does not require to specify degrees and orders of 
+  spherical harmonic coefficients if sorted as in Table 1 (see below).
+
+           Table 1: Structure of the input GGM file - spherical harmonic 
+           coefficients sorted primarily according to degrees.
+           ----------------------------------------
+           n   m       Cnm           Snm
+           ----------------------------------------
+           2   0   -0.48417E-03    0.00000E+00
+           2   1   -0.20662E-09    0.13844E-08
+           2   2    0.24394E-05   -0.14003E-05
+           3   0    0.95716E-06    0.00000E+00
+           ----------------------------------------
+
+  To employ this functionality, the input file must be in the binary "*.mat" 
+  format and must contain three variables:
+
+    1) a matrix of an arbitrary name (following the Matlab's rules) with two 
+       columns ([Cnm Snm], cf.  the third and fourth column in Table 1),
+
+    2) an integer named as "nmin" specifying the minimum degree of the 
+       coefficients to be imported,
+
+    3) an integer names as "nmax" specifying the maximum degree of the 
+       coefficients to be imported.
+
+  Again, this improvement is aimed for a more comfortable handling of 
+  ultra-high-degree expansions, for which the size of the input files 
+  containing spherical harmonic coefficients may easily reach a few tens of GB 
+  on the disk.  Omitting the first two columns from Table 1 reduces the size of 
+  the input file by about one half.  Importantly, the first two columns from 
+  Table 1 may be omitted only if the coefficients are sorted as shown in Table 
+  1. Other orderings of the coefficients, such as the one in Table 2 or others, 
+  are not supported in this case.
+
+           Table 2: Structure of the input GGM file - spherical harmonic 
+           coefficients sorted primarily according to orders.
+           ----------------------------------------
+           n   m       Cnm           Snm
+           ----------------------------------------
+           2   0   -0.48417E-03    0.00000E+00
+           3   0    0.95712E-06    0.00000E+00
+           4   0    0.53998E-06    0.00000E+00
+           5   0    0.68658E-07    0.00000E+00
+           ----------------------------------------
+
+  Note that if the degrees and orders are omitted in the file, GrafLab does not 
+  perform checks of the structure of the file.
+
+  Example: A file with an incomplete set of spherical harmonic coefficients 
+           excluding information on degrees and orders can be obtained from the 
+           enclosed gravity field model EGM96 (the "EGM96.mat" file) using the 
+           following commands:
+
+           load('EGM96.mat'); %Loads EGM96, a gravity model up to degree 360
+                              %Importantly, the coefficients in this file are stored in agreement with Table 1.
+                              %No reordering of the coefficients is therefore necessary.
+           EGM96(EGM96(:,1)<100,:)=[]; %Deletes coefficients below degree 100
+           EGM96(:,1:2)=[]; %Deletes information on degrees and orders
+           nmin=100; %Specifies the minimum degree of the coefficients
+           nmax=360; %Specifies the maximum degree of the coefficients
+           save EGM96_NoDegreesOrders_nmin100_nmax360.mat -mat -v7.3 EGM96 nmin nmax %Saves the harmonic band 100,...360 of the EGM96 model and variables nmin and nmax
+
+           The file "EGM96_NoDegreesOrders_nmin100_nmax360.mat" can 
+           subsequently be imported into GrafLab.
+
+- Data computed via the grid-wise mode can now be displayed even without the 
+  Mapping Toolbox. This is possible only when working without the GUI and the 
+  variable "Display_data" is set to 2 (cf. the description of the input 
+  variables to the "GrafLab" function).  The data are plotted simply as 
+  a matrix using the "imagesc" function. On the one hand, the plots are not as 
+  pretty as in the case of the Mapping Toolbox, but, on the other hand, the 
+  processing time is reduced substantially.  This improvement is therefore 
+  suitable for plotting large grids, say, with millions of points.
+
+  Example: Using the enclosed EGM96 gravity model, the plots with and without 
+           the Mapping Toolbox can be obtained using the following commands 
+           (compute the disturbing potential):
+
+           tic
+           GrafLab('OK',3986004.415E+8,6378136.3,0,360,1,'EGM96.mat',0,0,-90,0.5,90,0,0.5,360,0,[],[],[],[],'Mapping_Toolbox',0,5,1,[],1,1,0,1,6,1,50,300,1)
+           toc
+           tic
+           GrafLab('OK',3986004.415E+8,6378136.3,0,360,1,'EGM96.mat',0,0,-90,0.5,90,0,0.5,360,0,[],[],[],[],'No_Mapping_Toolbox',0,5,1,[],1,1,0,2,6,1,50,300,1)
+           toc
+
+           Here, the case when Mapping Toolbox is not used is 13 times faster 
+           (the time that is needed for the synthesis is negligible here).  
+           Even more impressive improvement is obtained when the grid is larger 
+           and/or a functional that strongly varies is to be displayed. For 
+           instance, the "imagesc" function (that is, not using Mapping 
+           Toolbox) is 450 times faster when the gravity disturbances are 
+           computed using the previous example:
+
+           tic
+           GrafLab('OK',3986004.415E+8,6378136.3,0,360,1,'EGM96.mat',0,0,-90,0.5,90,0,0.5,360,0,[],[],[],[],'Mapping_Toolbox',0,21,1,[],1,1,0,1,6,1,50,300,1)
+           toc
+           tic
+           GrafLab('OK',3986004.415E+8,6378136.3,0,360,1,'EGM96.mat',0,0,-90,0.5,90,0,0.5,360,0,[],[],[],[],'No_Mapping_Toolbox',0,21,1,[],1,1,0,2,6,1,50,300,1)
+           toc
+
+- The numerical outputs from GrafLab can now be taken directly as the output 
+  from the function "GrafLab".  The structure of the output variable is the 
+  same as in case of the output files.
+
+- Improved reading of the "gfc" files header.
+
+===============================================================================
+
+September 2017 (GrafLab 2.0.1)
+
+Minor updates.
+
+- Improved reading of the "gfc" files header.  The earlier versions of GrafLab 
+  were not able to read "gfc" format for some models, such as GECO, that 
+  contain in the header of the files physical units after the values of 
+  "earth_gravity_constant" and "radius".  GrafLab now also checks the 
+  normalization of the spherical harmonic coefficients (only the 
+  "fully_normalized" option is supported).
+
+- An additional error check added when computing "Geoid_undulation" or 
+  "Height_anomaly".  GrafLab now verifies whether the maximum degree of the DTM 
+  is sufficiently large compared with the maximum degree used to compute the 
+  two functionals from a geopotential model.
+
+- A minor modification in the report file.
+
+===============================================================================
+
+January 2017 (GrafLab 2.0)
+
+This is a major update of GrafLab.
+
+- GrafLab can now be fully controlled without the GUI.  The test computation 
+  (see the file "user_manual_GrafLab.txt", section "Test computation of 
+  a functional of the geopotential") can be run using the following command:
+
+           GrafLab('OK',3986004.415E+8,6378136.3,0,360,1,'EGM96.mat',0,1,[],[],[],[],[],[],[],'input.txt',[],[],[],'my_output',0,5,1,[],1,1,0,[],[],[],[],[],1)
+
+  The description of the input variables can be found in the source code (look 
+  for the text: "function GrafLab")
+
+- The functional "Gravity" has been replaced by a new one, which is named 
+  "Gravity_vector_gX_gY_gZ".  The functional "Gravity_vector_gX_gY_gZ" yields 
+  three elements of the gravity vector in the LNOF, while the original 
+  functional "Gravity" was defined as the magnitude of the gravity vector.  
+  "Gravity" can easily be computed from "Gravity_vector_gX_gY_gZ" via 
+  sqrt(gX^2+gY^2+gZ^2).  For the definition of this functional, see 
+  "Definition_of_functionals_of_the_geopotential_used_in_GrafLab_software.pdf".
+
+- When working without the GUI, a custom reference ellipsoid can now be defined 
+  by 5 parameters: geocentric gravitational constant, semimajor axis, the first 
+  numerical eccentricity, the 4*pi fully normalized spherical harmonic 
+  coefficient C20 and the angular velocity.  This option is not available via 
+  the GUI.
+
+- Grid-wise computations can now be performed on user-specified grids defined 
+  by vectors of latitudes and longitudes. Within each of the two vectors, 
+  varying spacing is supported.
+
+- Functions to transform ellipsoidal/spherical coordinates into cartesian ones 
+  and vice versa have been replaced by own functions in order to remove the 
+  dependency of the computation part of the code on the Mapping Toolbox. To 
+  display data on a map, Mapping Toolbox is still required.  The new functions 
+  can be found at the end of the source code.
+
+           Original function   <-->   New function
+           geodetic2ecef       <-->   ell2cart
+           ecef2geodetic       <-->   cart2ell
+           sph2cart            <-->   sph2cart (the same name, but the new function is used)
+           cart2sph            <-->   cart2sph (the same name, but the new function is used)
+
+  The input and output parameters of the matching functions remain the same.
+
+- The version 7.3 of the Matlab's binary file format is now used by default to 
+  save the computed data into a MAT-file. This version allows to save data 
+  greater than 2 GB on 64-bit systems.
+
+- Minor modifications of the report file.
+
+- Some error checks are added or slightly modified.
+
+Some useful tips and tricks:
+
+- Example No. 1:
+
+  To compute gravitational vector in the LNOF (i.e. the gravity vector without 
+  the centrifugal part), choose the functional "Gravity_vector_gX_gY_gZ" and 
+  use a custom reference ellipsoid with the angular velocity being equal to 
+  zero:
+
+           GrafLab('OK',3986004.415E+8,6378136.3,0,360,[3986005*10^8 6378137 sqrt(0.006694380022903416) -108263*10^-8/sqrt(5) 0],'EGM96.mat',0,1,[],[],[],[],[],[],[],'input.txt',[],[],[],'Example_1',0,16,1,[],1,1,0,[],[],[],[],[],1)
+
+  Here, the GRS80 reference ellipsoid is used (look for "%GRS80" in the source 
+  code to obtain the 5 defining parameters) with the angular velocity set to 
+  zero. Note that even though the functional "Gravity_vector_gX_gY_gZ" is 
+  independent of the reference ellipsoid and of its normal gravity field, it 
+  has to be defined for two reasons: 1) in all computations, GrafLab takes the 
+  value of the angular velocity from the defining parameters of the reference 
+  ellipsoid, since global gravity field models usually do not specify this 
+  parameter; 2) GrafLab needs the values of the semimajor axis and of the first 
+  numerical eccentricity if the input coordinates are ellipsoidal (which is the 
+  case of the aforementioned example).  The ellipsoidal coordinates have to be 
+  to transformed into spherical ones, which are then used to perform spherical 
+  harmonic synthesis; hence the values of the semimajor axis and of the first 
+  numerical eccentricity are required for the transformation step. In the case 
+  of computational points defined by spherical coordinates, all 5 defining 
+  parameters can be set to zero, as they are not used in the computation.
+
+  Note, however, that in the report file, the name of the functional 
+  "Gravity_vector_gX_gY_gZ" will appear, not "Gravitational_vector_gX_gY_gZ".
+
+- Example No. 2:
+
+  If you wish to compute some functional that originally employs the normal 
+  gravity field of a reference ellipsoid (e.g. the gravity disturbance in 
+  spherical approximation -- "Gravity_disturbance_sa"), but without the normal 
+  gravity field, set the parameters GM, C20 and omega to zero:
+
+           GrafLab('OK',3986004.415E+8,6378136.3,0,360,[0 6378137 sqrt(0.006694380022903416) 0 0],'EGM96.mat',0,1,[],[],[],[],[],[],[],'input.txt',[],[],[],'Example_2',0,21,1,[],1,1,0,[],[],[],[],[],1)
+
+  In this case, we obtained the negative first-order radial derivative of the 
+  gravitational potential. Again, the values of the semimajor axis and of the 
+  first eccentricity of the reference ellipsoid are required, as the 
+  computation points are defined by ellipsoidal coordinates and have to be 
+  transformed into spherical ones.
+
+  Note that in the report file, the name of the functional 
+  "Gravity_disturbance_sa" will appear.
+
+- Example No. 3:
+
+  GrafLab can also be used to perform a surface spherical synthesis without the 
+  scaling parameters "GM" and "R". This is especially useful when one needs to 
+  compute, e.g., a planetary topography expanded in a series of surface 
+  spherical harmonics.
+
+  The following command computes the Earth's topography from a DTM2006.0 model 
+  (the enclosed "DTM2006.mat" file) to degree and order 360 on a global grid:
+
+           GrafLab('OK',1,1,0,360,[0 0 0 0 0],'DTM2006.mat',1,0,-90,1,90,0,1,360,0,[],[],[],[],'Example_3',0,11,1,[],1,1,0,[],[],[],[],[],1)
+
+  In this example, we defined the computation points by spherical coordinates 
+  (as the computation has to be performed on a sphere), set the "GM" and "R" 
+  values to one and computed the functional "Gravitational_potential". With 
+  these settings, we performed a surface spherical harmonic synthesis, 
+  obtaining the Earth's topography expanded up to degree 360 from the DTM2006.0 
+  model.
+
+  Similarly as in the previous examples, the name of the functional 
+  "Gravitational_potential" will appear in the report file.
+
+- Example No. 4:
+
+  GrafLab now allows to perform a fast spherical harmonic synthesis on grids 
+  defined by varying spacing in the latitudinal and/or the longitudinal 
+  directions. 
+
+  This option can be used, e.g., to perform synthesis on a grid defined in 
+  ellipsoidal coordinates, but with equal spacing of the latitudes in terms of 
+  spherical coordinates. Suppose that we wish to compute some functional on 
+  a grid lying on a reference ellipsoid with equal spacing in spherical 
+  latitude (i.e., the spacing in terms of ellipsoidal latitudes varies). The 
+  grid is defined by the spherical latitudes "phi_sph=-90:1:90", the longitudes 
+  "lambda=0:1:360" and the height of the grid above the reference ellipsoid 
+  "h=0". The spherical latitudes "phi_sph" can be transformed into ellipsoidal 
+  ones "phi_ell", and these ellipsoidal latitudes (with varying spacing) can 
+  now be used as the input ellipsoidal coordinates. Example commands:
+
+           phi_sph=[-90:1:90]'; %Vector of spherical latitudes
+           lambda=[0:1:360]'; %Vector of longitudes
+           eEl=sqrt(0.006694380022903416); %The first eccentricity of GRS80
+           phi_ell=atan(tan(phi_sph*pi/180)./sqrt(1-eEl^2))*180/pi; %Transformation of spherical latitudes into ellipsoidal latitudes (this formula holds only for points lying on the reference ellipsoid)
+           GrafLab('OK',3986004.415E+8,6378136.3,0,360,1,'EGM96.mat',0,0,phi_ell,'empty','empty',lambda,'empty','empty',0,[],[],[],[],'Example_4',0,5,1,[],1,1,0,[],[],[],[],[],1)
+
+  These commands compute the disturbing potential from EGM96 up to degree and 
+  order 360 on a grid referring to the GRS80 ellipsoid.  The grid is 
+  equiangular in spherical coordinates (the step in the both the latitudinal 
+  and the longitudinal direction is 1°), but is non-equiangular in terms of 
+  ellipsoidal latitudes, as the spacing in ellipsoidal latitudes varies.
+
+===============================================================================
+
+November 2016 (GrafLab 1.2.3)
+
+- Until this version, the accelerated routine to compute the fully normalized 
+  associated Legendre functions using the extended-range arithmetic approach on 
+  64-bit Matlab (see the modification from August 2015) was implemented only to 
+  the grid computations.  The improved routine is now also implemented in the 
+  point-wise computation and the load data option.
+
+===============================================================================
+
+April 2016 (GrafLab 1.2.2)
+
+- Minor modifications to ensure compatibility with the latest releases of 
+  Matlab.
+
+===============================================================================
+
+August 2015 (GrafLab 1.2.1)
+
+- Accelerated routine to compute the fully normalized associated Legendre 
+  functions via the extended-range arithmetic approach on 64-bit Matlab. For 
+  example, for "nmax=2190" and 1801 latitudes, the new routine is approximately 
+  two times faster then the previous one. The routine for 32-bit Matlab remains 
+  the same.
+
+===============================================================================
+
+April 2014 (GrafLab 1.2)
+
+- The earlier versions of GrafLab automatically assumed that the spherical 
+  harmonic coefficients of the degrees 0 and 1 are set as follows: "C00=1", 
+  "C10=0", "C11=0" and "S11=0". There is no such a restriction in the new 
+  version 1.2. This means that, for example, spherical harmonic coefficients of 
+  the potential of topographic masses can now be imported and used with "nmin 
+  = 0" (instead of "nmin = 2" as in the previous versions of GrafLab). In 
+  general, in the case of the potential of topographic masses, these 
+  coefficietns have different values from the ones stated above.  Thereby, the 
+  following functionals must be computed with "nmin = 0": "Geoid undulation", 
+  "Height anomaly", "Gravity disturbance", and the non-diagonal elements of the 
+  disturbing and the gravitational tensor in the LNOF. The rest of the 
+  functionals can be computed with a value of nmin in the interval "0 <= nmin 
+  <= nmax". For a detailed overview, please, see Table 4 in the source code 
+  "GrafLab.m".  If the GGM file does not specify any of these coefficients, 
+  GrafLab will automatically use the aforementioned values for the unspecified 
+  coefficients.  As for the computation of commission errors, neither the 
+  structure of the variance-covariance matrix nor the value of "nmin" are 
+  changed compared to the version 1.00.
+
+- GrafLab 1.2 computes the zonal spherical harmonic coefficients of the 
+  reference ellipsoid up to degree "n = 20" (in the previous versions this 
+  value was set to "n = 10" which is sufficient in the vast majority of 
+  practical applications).  The differences compared to "n = 10" are of very 
+  small orders of magnitude, although might be noticeable in the results 
+  provided by GrafLab. For example, the differences in terms of the disturbing 
+  potential are approximately of the order of 10^-8 m^2*s^-2 or so.
+
+===============================================================================
+
+February 2014 (GrafLab 1.1.2)
+
+- A bug was detected when computing the functionals "Geoid undulation" and 
+  "Height anomaly" using spherical harmonic coefficients sorted primarily 
+  according to orders. Fixed.
+
+===============================================================================
+
+November 2013 (GrafLab 1.1.1)
+
+- The sign "~" in the commands such as "[fi, ~, h]=ecef2geodetic(X,Y,Z,[aEl 
+  eEl]')" might cause an error in some older versions of MATLAB. Fixed.
+
+===============================================================================
+
+August 2013 (GrafLab 1.10)
+
+- Functionals of disturbing potential can now be computed including the 
+  zero-degree term "DELTA C00 = 1 - GMEll/GM" (if "nmin = 0"). In general, this 
+  term should be included in the computation, since otherwise it causes a shift 
+  in magnitude. If you do not wish to use this term, please set "nmin = 2".  
+  This change affects the following functionals of disturbing potential: 
+  disturbing potential "T", gravity disturbance sa (spherical approximation) 
+  "delta g_sa", gravity anomaly sa (spherical approximation) "DELTA g_sa", 
+  second radial derivative of disturbing potential "T_rr", diagonal elements of 
+  disturbing tensor in the LNOF "T_xx, T_yy, T_zz", geoid undulation "N", 
+  height anomaly ell "zeta_ell", height anomaly "zeta".
+
+- A bug was detected when computing gravity disturbance "delta g" using the 
+  point-wise approach (or load data) and "nmax < 10". MATLAB displayed an error 
+  message: "Attempted to access CElm(X); index out of bounds because 
+  numel(CElm)=X-1". Fixed.
+
+- The gravity disturbance "delta g" cannot be now computed if "nmin > 0".
+
+- If the GGM file has the structure defined by ICGEM (note that the name of the 
+  input file must have the suffix ".gfc"), GrafLab now uses the values of "GM" 
+  and "R" from this file, and ignores the values of these two variables entered 
+  via the GUI.
+
+- In addition to the ASCII file, the binary MAT-file can now be used to import 
+  the computational points using the check-box "Load data". Its name appears in 
+  the report file.
+
+- In some versions of MATLAB and Mapping toolbox, the colorbar in displayed 
+  figures may wrongly vary from 0 to 1. This issue was fixed using the function 
+  "caxis".
+
+===============================================================================
+
+July 2013 (GrafLab 1.00)
+
+- Published in Computers & Geosciences 56 (2013), pp. 186-196
+  doi: 10.1016/j.cageo.2013.03.012.
+
+===============================================================================
+
