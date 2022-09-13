@@ -29,7 +29,7 @@ command line.
 
 ![graflab-gui](img/gui.png)
 
-For a few quick aplications of GrafLab, you may visit
+Too see a few simple aplications of GrafLab, you may visit
 [https://www.blazejbucha.com/#GrafLab](https://www.blazejbucha.com/#GrafLab).
 
 
@@ -57,7 +57,7 @@ Feel free to contact the author, Blazej Bucha, at blazej.bucha@stuba.sk.
 
 # Citing
 
-If you use GrafLab, please consider citing it in your work.
+If you use GrafLab in your work, please consider citing our paper on GrafLab.
 
 * Bucha, B., Janák, J., 2013. A MATLAB-based graphical user interface program
   for computing functionals of the geopotential up to ultra-high degrees and
