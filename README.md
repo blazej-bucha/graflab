@@ -36,7 +36,7 @@ Too see a few simple aplications of GrafLab, you may visit
 # Documentation
 
 If you want just a brief introduction to GrafLab, see
-[docs/user-manual.txt](docs/user-manual.txt).
+[docs/user-manual.md](docs/user-manual.md).
 
 A detail GrafLab cookbook is available at
 [https://github.com/blazej-bucha/graflab-cookbook](https://github.com/blazej-bucha/graflab-cookbook).
