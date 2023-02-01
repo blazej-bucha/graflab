@@ -454,7 +454,7 @@ Some useful tips and tricks:
            phi_sph=[-90:1:90]'; %Vector of spherical latitudes
            lambda=[0:1:360]'; %Vector of longitudes
            eEl=sqrt(0.006694380022903416); %The first eccentricity of GRS80
-           phi_ell=atan(tan(phi_sph*pi/180)./sqrt(1-eEl^2))*180/pi; %Transformation of spherical latitudes into ellipsoidal latitudes (this formula holds only for points lying on the reference ellipsoid)
+           phi_ell=atan(tan(phi_sph*pi/180)./(1-eEl^2))*180/pi; %Transformation of spherical latitudes into ellipsoidal latitudes (this formula holds only for points lying on the reference ellipsoid)
            GrafLab('OK',3986004.415E+8,6378136.3,0,360,1,'EGM96.mat',0,0,phi_ell,'empty','empty',lambda,'empty','empty',0,[],[],[],[],'Example_4',0,5,1,[],1,1,0,[],[],[],[],[],1)
 
   These commands compute the disturbing potential from EGM96 up to degree and 
